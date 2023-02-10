@@ -14,4 +14,9 @@ public class UserController {
     public String login() {
         return "login";
     }
+
+    @RequestMapping("logout.html")
+    public String logout() {
+        return "logout";
+    }
 }

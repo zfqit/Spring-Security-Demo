@@ -45,7 +45,7 @@ public class WebSecurityConfigurer {
                 //.logoutUrl("/logout") // 设置注销 url GET
                 .logoutRequestMatcher(new OrRequestMatcher(
                         new AntPathRequestMatcher("/aa", "GET"),
-                        new AntPathRequestMatcher("/bb", "GET")
+                        new AntPathRequestMatcher("/bb", "POST")
                 )) // 配置多组注销 url 和 请求方式
                 .invalidateHttpSession(true) // 注销后清除 session
                 .clearAuthentication(true) // 注销后清除认证

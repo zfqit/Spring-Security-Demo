@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注销</title>
+</head>
+<body>
+
+<!-- 页面获取用户信息
+
+    pom文件导入
+    <dependency>
+        <groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+    </dependency>
+
+    配置
+    <html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="https://www.thymeleaf.org">
+
+    使用
+   <ul>
+    <li sec:authentication="principal.username"></li>
+    <li sec:authentication="principal.authorities"></li>
+    <li sec:authentication="principal.accountNonExpired"></li>
+    <li sec:authentication="principal.accountNonLocked"></li>
+    <li sec:authentication="principal.credentialsNonExpired"></li>
+   </ul>
+
+ -->
+<ul>
+    <li sec:authentication="principal.username"></li>
+    <li sec:authentication="principal.authorities"></li>
+    <li sec:authentication="principal.accountNonExpired"></li>
+    <li sec:authentication="principal.accountNonLocked"></li>
+    <li sec:authentication="principal.credentialsNonExpired"></li>
+</ul>
+
+<form method="post" th:action="@{/bb}">
+    <input type="submit" value="注销">
+</form>
+</body>
+</html>
