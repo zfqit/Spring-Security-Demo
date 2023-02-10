@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 /**
  * @author zhoufuqi
@@ -39,6 +41,16 @@ public class WebSecurityConfigurer {
                 //.failureForwardUrl("/login.html") // failureForwardUrl 失败以后的 forward 跳转 注意:因此获取 request 中异常信息,这里只能使用failureForwardUrl`
                 //.failureUrl("/login.html") // failureUrl 失败以后的重定向跳转
                 .failureHandler(new MyAuthenticationFailureHandler()) // 自定义登录失败的返回内容 用于前后端分离返回 json
+                .and().logout() // 开启注销配置
+                //.logoutUrl("/logout") // 设置注销 url GET
+                .logoutRequestMatcher(new OrRequestMatcher(
+                        new AntPathRequestMatcher("/aa", "GET"),
+                        new AntPathRequestMatcher("/bb", "GET")
+                )) // 配置多组注销 url 和 请求方式
+                .invalidateHttpSession(true) // 注销后清除 session
+                .clearAuthentication(true) // 注销后清除认证
+                //.logoutSuccessUrl("/login.html") // 退出登录时跳转地址
+                .logoutSuccessHandler(new MyLogoutSuccessHandler()) // 自定义注销成功的返回内容 用于前后端分离返回 json
                 .and().csrf().disable();//这里先关闭 CSRF;
         return http.build();
     }
