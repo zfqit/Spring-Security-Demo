@@ -2,7 +2,14 @@ package com.zhou.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -25,9 +32,7 @@ public class WebSecurityConfigurer {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.
-                authorizeHttpRequests().mvcMatchers("/index").permitAll()
-                .mvcMatchers("/login.html").permitAll() // 设置 /login.html /index 资源被放行
+        http.authorizeHttpRequests().mvcMatchers("/index").permitAll().mvcMatchers("/login.html").permitAll() // 设置 /login.html /index 资源被放行
                 .anyRequest().authenticated() // 设置所有请求拦截
                 .and().formLogin() // 设置表单验证
                 .loginPage("/login.html") // 设置自定义登录页
@@ -43,10 +48,7 @@ public class WebSecurityConfigurer {
                 .failureHandler(new MyAuthenticationFailureHandler()) // 自定义登录失败的返回内容 用于前后端分离返回 json
                 .and().logout() // 开启注销配置
                 //.logoutUrl("/logout") // 设置注销 url GET
-                .logoutRequestMatcher(new OrRequestMatcher(
-                        new AntPathRequestMatcher("/aa", "GET"),
-                        new AntPathRequestMatcher("/bb", "POST")
-                )) // 配置多组注销 url 和 请求方式
+                .logoutRequestMatcher(new OrRequestMatcher(new AntPathRequestMatcher("/aa", "GET"), new AntPathRequestMatcher("/bb", "POST"))) // 配置多组注销 url 和 请求方式
                 .invalidateHttpSession(true) // 注销后清除 session
                 .clearAuthentication(true) // 注销后清除认证
                 //.logoutSuccessUrl("/login.html") // 退出登录时跳转地址
@@ -55,6 +57,41 @@ public class WebSecurityConfigurer {
         return http.build();
     }
 
+    @Bean
+    public UserDetailsService userDetailsService() {
+        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+        UserDetails u1 = User.withUsername("zhangs").password("{noop}111").roles("USER").build();
+        inMemoryUserDetailsManager.createUser(u1);
+        return inMemoryUserDetailsManager;
+    }
+
+    /**
+     * 自定义全局配置 AuthenticationManager
+     *
+     * @return
+     * @throws Exception
+     */
+    //@Bean
+    //public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+    //    AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    //    authenticationManagerBuilder.userDetailsService(userDetailsService());
+    //    return authenticationManagerBuilder.build();
+    //}
+
+
+    /**
+     * 自定义全局配置 AuthenticationManager
+     *
+     * @param objectPostProcessor
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    public AuthenticationManager authManager(ObjectPostProcessor<Object> objectPostProcessor) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = new AuthenticationManagerBuilder(objectPostProcessor);
+        authenticationManagerBuilder.userDetailsService(userDetailsService());
+        return authenticationManagerBuilder.build();
+    }
 
     /**
      * 旧版 spring security 配置
