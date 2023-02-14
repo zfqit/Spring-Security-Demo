@@ -1,13 +1,7 @@
 server:
-  port: 8081
+  port: 8082
 
 spring:
-  # thymeleaf
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    mode: HTML
-    suffix: .html
   # mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,3 +14,6 @@ spring:
 mybatis-plus:
   mapper-locations: classpath:com/zhou/mapper/*.xml
   type-aliases-package: com.zhou.entity
+logging:
+  level:
+    com.zhou: debug
