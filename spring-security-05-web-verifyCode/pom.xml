@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.zhou</groupId>
-    <artifactId>spring-security-web-verifyCode</artifactId>
+    <artifactId>spring-security-05-web-verifyCode</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring-security-web-verifyCode</name>
     <description>spring-security-web-verifyCode</description>

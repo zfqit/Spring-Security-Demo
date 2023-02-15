@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class VerifyFilter extends UsernamePasswordAuthenticationFilter {
 
-    public static final String FORM_VERIFY_CODE_KEY = "password";
+    public static final String FORM_VERIFY_CODE_KEY = "verify";
 
     private String verifyCode = FORM_VERIFY_CODE_KEY;
 
