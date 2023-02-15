@@ -25,5 +25,7 @@
           and ur.uid = #{uid}
     </select>
 
-
+    <update id="updateUsernameByPassword">
+        UPDATE `user` SET `password` = #{password} WHERE `username` = #{username}
+    </update>
 </mapper>
