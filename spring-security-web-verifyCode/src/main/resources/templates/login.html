@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+<form method="post" th:action="@{/doLogin}">
+    账号: <input name="uname" type="text"> <br>
+    密码: <input name="pwd" type="text"> <br>
+    验证码: <input name="verify" type="text"> <img alt="" th:src="@{/verify}"> <br>
+    <input type="submit" value="登录">
+</form>
+</body>
+</html>
