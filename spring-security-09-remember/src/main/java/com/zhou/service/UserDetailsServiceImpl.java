@@ -1,4 +1,4 @@
-package com.zhou.controller.service;
+package com.zhou.service;
 
 
 import com.zhou.dao.UserMapper;

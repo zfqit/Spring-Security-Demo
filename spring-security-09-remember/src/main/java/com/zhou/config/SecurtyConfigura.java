@@ -1,4 +1,4 @@
-package com.zhou.controller.config;
+package com.zhou.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
