@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringSecurity09RememberApplicationTests {
+class SpringSecurity05WebVerifyCodeApplicationTests {
 
     @Test
     void contextLoads() {
