@@ -1,0 +1,22 @@
+# \u914D\u7F6E session \u8FC7\u671F\u65F6\u95F4
+server:
+  servlet:
+    session:
+      timeout: 1
+
+spring:
+  # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: 123456
+    url: jdbc:mysql://119.8.61.8:6033/security-test?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&allowMultiQueries=true
+
+#  mybatis-plus
+mybatis-plus:
+  mapper-locations: classpath:com/zhou/mapper/*.xml
+  type-aliases-package: com.zhou.entity
+logging:
+  level:
+    com.zhou: debug
