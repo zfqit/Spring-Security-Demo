@@ -2,21 +2,26 @@ package com.zhou.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhou.filter.MyUsernamePasswordAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zhou.security.MyPersistentTokenBasedRememberMeServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author zhoufuqi
@@ -26,20 +31,13 @@ import java.util.Map;
 public class WebSecurityConfigure {
 
 
-    private final UserDetailsService userDetailsService;
-
-    @Autowired
-    public WebSecurityConfigure(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    @Bean
+    public UserDetailsService userDetailsService() {
+        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+        inMemoryUserDetailsManager.createUser(User.builder().username("root").password("{noop}123").authorities(
+                "admin").build());
+        return inMemoryUserDetailsManager;
     }
-
-    //@Bean
-    //public UserDetailsService userDetailsService() {
-    //    InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
-    //    inMemoryUserDetailsManager.createUser(User.builder().username("root").password("{noop}123").authorities(
-    //            "admin").build());
-    //    return inMemoryUserDetailsManager;
-    //}
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -51,6 +49,8 @@ public class WebSecurityConfigure {
         MyUsernamePasswordAuthenticationFilter loginFilter = new MyUsernamePasswordAuthenticationFilter();
         loginFilter.setPasswordParameter("password");
         loginFilter.setUsernameParameter("uname");
+        loginFilter.setRememberMeServices(rememberMeServices());
+        // 配置登录地址
         loginFilter.setFilterProcessesUrl("/doLogin");
         loginFilter.setAuthenticationSuccessHandler((request, response, authentication) -> {
             Map<String, Object> map = new HashMap<>();
@@ -78,9 +78,11 @@ public class WebSecurityConfigure {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService);
+        authenticationManagerBuilder.userDetailsService(userDetailsService());
 
-        http.authorizeHttpRequests().anyRequest().authenticated().and().formLogin().and().exceptionHandling().authenticationEntryPoint((request, response, exception) -> {
+        http.authorizeHttpRequests()
+                .anyRequest().authenticated().and().formLogin()
+                .and().exceptionHandling().authenticationEntryPoint((request, response, exception) -> {
                     Map<String, Object> result = new HashMap<>();
                     result.put("code", 500);
                     result.put("msg", exception.getMessage());
@@ -97,9 +99,18 @@ public class WebSecurityConfigure {
                     String s = new ObjectMapper().writeValueAsString(map);
                     response.setContentType("application/json;charset=UTF-8");
                     response.getWriter().println(s);
-                }).and().csrf().disable();
+                }).and()
+                .rememberMe() // 开启记住我
+                .rememberMeServices(rememberMeServices())
+                .and()
+                .csrf().disable();
         http.addFilterAt(loginFilter(authenticationConfiguration), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        return new MyPersistentTokenBasedRememberMeServices(UUID.randomUUID().toString(), userDetailsService(), new InMemoryTokenRepositoryImpl());
     }
 
 }
